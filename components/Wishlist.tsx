@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
@@ -35,7 +36,7 @@ const Wishlist: React.FC<WishlistProps> = ({ items, onProductClick, onToggleWish
           Keep your favorites close. Add the styles you love here and grab them when you’re ready to buy.
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
         {items.map(product => (
           <ProductCard
             key={product.id}

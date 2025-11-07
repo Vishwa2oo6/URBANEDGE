@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { IMAGE_ASSETS } from '../image-manifest';
 
 interface HeroProps {
   onShopNowClick: () => void;
@@ -7,9 +8,13 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onShopNowClick }) => {
   return (
-    <div className="relative h-screen flex items-center justify-center text-center -mt-20">
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('https://picsum.photos/seed/hero/1920/1080')" }}>
-        <div className="absolute inset-0 bg-black opacity-60"></div>
+    <div className="relative flex items-center justify-center text-center" style={{ height: 'calc(100vh - 80px)'}}>
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+        style={{ 
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${IMAGE_ASSETS.hero}')` 
+        }}
+      >
       </div>
       <div className="relative z-10 p-4">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white uppercase tracking-widest leading-tight">

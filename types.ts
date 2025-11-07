@@ -1,13 +1,17 @@
+
 export interface Product {
   id: number;
   name: string;
   category: string;
   price: number;
-  imageUrl: string;
+  imageUrls: string[];
   description: string;
   fabric: string;
   fit: string;
   care: string[];
+  stock: number;
+  colors?: string[];
+  sizes?: string[];
 }
 
 export interface Category {
@@ -35,15 +39,19 @@ export interface ShippingInfo {
 }
 
 export interface User {
+  id: number;
   name: string;
   email: string;
+  password?: string;
   memberSince: string;
+  role?: 'customer' | 'seller';
 }
 
 export type OrderStatus = 'Processing' | 'Shipped' | 'Out for Delivery' | 'Delivered';
 
 export interface Order {
   id: string;
+  userId: number;
   date: string;
   items: CartItem[];
   total: number;

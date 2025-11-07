@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
@@ -8,9 +9,10 @@ interface SearchResultsProps {
   onProductClick: (id: number) => void;
   onToggleWishlist: (id: number) => void;
   wishlist: number[];
+  onAddToCart: (product: Product, quantity: number) => void;
 }
 
-const SearchResults: React.FC<SearchResultsProps> = ({ query, results, onProductClick, onToggleWishlist, wishlist }) => {
+const SearchResults: React.FC<SearchResultsProps> = ({ query, results, onProductClick, onToggleWishlist, wishlist, onAddToCart }) => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 animate-fade-in">
       <div className="text-center mb-12">
@@ -29,7 +31,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, results, onProduct
       </div>
 
       {results.length > 0 ? (
-        <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
           {results.map(product => (
             <ProductCard
               key={product.id}
@@ -37,6 +39,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, results, onProduct
               onProductClick={onProductClick}
               onToggleWishlist={onToggleWishlist}
               isInWishlist={wishlist.includes(product.id)}
+              onAddToCart={onAddToCart}
             />
           ))}
         </div>

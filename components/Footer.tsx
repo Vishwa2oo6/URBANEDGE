@@ -48,10 +48,10 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="mt-12 border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between">
           <p className="text-base text-gray-400 order-2 sm:order-1 mt-4 sm:mt-0">&copy; {new Date().getFullYear()} UrbanEdge. All rights reserved.</p>
           <div className="flex space-x-6 order-1 sm:order-2">
-            <a href="#" className="text-gray-400 hover:text-white">
+            <a href="#" className="text-gray-400 hover:text-white" aria-label="Visit our Twitter page">
               <TwitterIcon />
             </a>
-            <a href="#" className="text-gray-400 hover:text-white">
+            <a href="#" className="text-gray-400 hover:text-white" aria-label="Visit our Instagram page">
               <InstagramIcon />
             </a>
           </div>

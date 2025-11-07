@@ -1,9 +1,11 @@
+
 import React from 'react';
+import { IMAGE_ASSETS } from '../image-manifest';
 
 const About: React.FC = () => {
   return (
     <div className="animate-fade-in">
-      <div className="relative h-[50vh] flex items-center justify-center text-center bg-cover bg-center" style={{ backgroundImage: "url('https://picsum.photos/seed/about/1920/1080')" }}>
+      <div className="relative h-[50vh] flex items-center justify-center text-center bg-cover bg-center" style={{ backgroundImage: `url('${IMAGE_ASSETS.about}')` }}>
         <div className="absolute inset-0 bg-black opacity-60"></div>
         <div className="relative z-10 p-4">
             <h1 className="text-4xl md:text-6xl font-extrabold text-white uppercase tracking-widest">

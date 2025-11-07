@@ -1,6 +1,6 @@
 import React from 'react';
 import { CartItem } from '../types';
-import { MinusIcon, PlusIcon, TrashIcon } from './icons';
+import { MinusIcon, PlusIcon, TrashIcon, ShoppingCartIcon } from './icons';
 
 interface CartProps {
   cartItems: CartItem[];
@@ -16,9 +16,12 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
 
   if (cartItems.length === 0) {
     return (
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center animate-fade-in">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center animate-fade-in flex flex-col items-center">
+        <ShoppingCartIcon className="w-24 h-24 text-gray-700 mb-6" />
         <h1 className="text-4xl font-bold uppercase tracking-wider text-white">Your Cart is Empty</h1>
-        <p className="mt-4 text-lg text-gray-300">Looks like you haven't added anything to your cart yet.</p>
+        <p className="mt-4 max-w-xl mx-auto text-lg text-gray-300">
+            Looks like you haven't added anything yet. Your next favorite outfit is just a click away. Explore our collections and find the styles that speak to you.
+        </p>
         <button
           onClick={() => onNavigate('shop')}
           className="mt-8 px-8 py-3 bg-white text-black font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors duration-300"
@@ -44,7 +47,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
             {cartItems.map((item) => (
               <li key={item.id} className="flex py-6">
                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-700">
-                  <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover object-center" />
+                  <img src={item.imageUrls[0]} alt={item.name} className="h-full w-full object-cover object-center" />
                 </div>
                 <div className="ml-4 flex flex-1 flex-col">
                   <div>

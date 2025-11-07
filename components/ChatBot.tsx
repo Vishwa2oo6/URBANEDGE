@@ -1,7 +1,7 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, Chat } from "@google/genai";
 import { PaperAirplaneIcon, XIcon, UserIcon, BotIcon } from './icons';
-import { ChatBubbleIcon } from './icons';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -69,10 +69,10 @@ const ChatBot: React.FC = () => {
     <>
       <button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 bg-white text-black p-4 rounded-full shadow-lg hover:scale-110 transition-transform duration-200 z-50"
+        className="fixed bottom-24 right-6 bg-white text-black p-4 rounded-full shadow-lg hover:scale-110 transition-transform duration-200 z-50"
         aria-label="Open style assistant"
       >
-        <ChatBubbleIcon className="w-8 h-8" />
+        <BotIcon className="w-8 h-8" />
       </button>
 
       {isOpen && (

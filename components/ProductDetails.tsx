@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Product } from '../types';
-import { HeartIcon, CheckCircleIcon, TruckIcon, XIcon } from './icons';
+import { HeartIcon, CheckCircleIcon, TruckIcon, XIcon, BellIcon, SparklesIcon } from './icons';
 import ProductCard from './ProductCard';
 
 interface ProductDetailsProps {
@@ -13,9 +13,10 @@ interface ProductDetailsProps {
   allProducts: Product[];
   onProductClick: (id: number) => void;
   wishlist: number[];
+  onOpenAIStylist?: (product: Product) => void;
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onAddToCart, onToggleWishlist, isInWishlist, allProducts, onProductClick, wishlist }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onAddToCart, onToggleWishlist, isInWishlist, allProducts, onProductClick, wishlist, onOpenAIStylist }) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdded, setIsAdded] = useState(false);
   
@@ -29,6 +30,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onAddT
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const [activeImageUrl, setActiveImageUrl] = useState(product?.imageUrls[0] || '');
 
+  const isOutOfStock = product.stock === 0;
 
   if (!product) {
     return (
@@ -174,24 +176,33 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onAddT
                 )}
 
                 <div className="mt-8 flex gap-4">
-                    <button 
-                      onClick={handleAddToCartClick}
-                      disabled={isAdded}
-                      className={`flex-grow px-8 py-4 text-white font-bold uppercase tracking-wider transition-colors duration-300 rounded-md flex items-center justify-center gap-2 ${
-                          isAdded 
-                          ? 'bg-green-600 cursor-not-allowed' 
-                          : 'bg-pink-600 hover:bg-pink-700'
-                      }`}
-                    >
-                      {isAdded ? (
-                          <>
-                              <CheckCircleIcon className="w-6 h-6" />
-                              <span>Added!</span>
-                          </>
-                      ) : (
-                          <span>Add to Cart</span>
-                      )}
-                    </button>
+                    {isOutOfStock ? (
+                        <button 
+                            disabled
+                            className="flex-grow px-8 py-4 bg-gray-700 text-gray-400 font-bold uppercase tracking-wider rounded-md cursor-not-allowed"
+                        >
+                            Out of Stock
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={handleAddToCartClick}
+                            disabled={isAdded}
+                            className={`flex-grow px-8 py-4 text-white font-bold uppercase tracking-wider transition-colors duration-300 rounded-md flex items-center justify-center gap-2 ${
+                                isAdded 
+                                ? 'bg-green-600 cursor-not-allowed' 
+                                : 'bg-pink-600 hover:bg-pink-700'
+                            }`}
+                        >
+                        {isAdded ? (
+                            <>
+                                <CheckCircleIcon className="w-6 h-6" />
+                                <span>Added!</span>
+                            </>
+                        ) : (
+                            <span>Add to Cart</span>
+                        )}
+                        </button>
+                    )}
                     <button
                       onClick={() => onToggleWishlist(product.id)}
                       className={`flex items-center justify-center gap-2 px-6 py-4 border rounded-md transition-colors duration-300 font-bold uppercase tracking-wider text-sm ${
@@ -205,6 +216,19 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onAddT
                         <span>{isInWishlist ? 'Wishlisted' : 'Wishlist'}</span>
                     </button>
                 </div>
+                
+                {/* Virtual Try-On Button */}
+                {onOpenAIStylist && !isOutOfStock && (
+                    <div className="mt-4">
+                        <button
+                            onClick={() => onOpenAIStylist(product)}
+                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold uppercase tracking-wider rounded-md hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
+                        >
+                            <SparklesIcon className="w-5 h-5" />
+                            <span>Virtual Try-On (AI)</span>
+                        </button>
+                    </div>
+                )}
 
                 <div className="mt-8 border-t border-gray-800 pt-6">
                     <h3 className="font-bold text-white uppercase tracking-wider">Delivery Options</h3>

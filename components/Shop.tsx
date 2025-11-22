@@ -1,14 +1,17 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
-import { PRODUCTS, CATEGORIES } from '../constants';
 import ProductCard from './ProductCard';
 import { ChevronDownIcon, CheckIcon, FilterIcon, XIcon } from './icons';
 import { Product, Category } from '../types';
+import { CATEGORIES } from '../constants';
 
 const sortOptions = [
     { value: 'featured', label: 'Featured' },
-    { value: 'stock-desc', label: 'Availability' },
+    { value: 'name-asc', label: 'Name: A to Z' },
+    { value: 'name-desc', label: 'Name: Z to A' },
     { value: 'price-asc', label: 'Price: Low to High' },
     { value: 'price-desc', label: 'Price: High to Low' },
+    { value: 'stock-desc', label: 'Availability' },
 ];
 
 const colorMap: { [key: string]: string } = {
@@ -80,31 +83,41 @@ const SizeButton: React.FC<{ size: string; isSelected: boolean; onClick: () => v
 
 
 interface ShopProps {
+    products: Product[];
     onProductClick: (id: number) => void;
     onToggleWishlist: (id: number) => void;
     wishlist: number[];
     onAddToCart: (product: Product, quantity: number) => void;
 }
 
-const Shop: React.FC<ShopProps> = ({ onProductClick, onToggleWishlist, wishlist, onAddToCart }) => {
+interface SelectedFilters {
+    category: string[];
+    color: string[];
+    size: string[];
+    fabric: string[];
+    fit: string[];
+}
+
+const Shop: React.FC<ShopProps> = ({ products, onProductClick, onToggleWishlist, wishlist, onAddToCart }) => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     
-    const allPrices = useMemo(() => PRODUCTS.map(p => p.price), []);
-    const minPrice = useMemo(() => Math.floor(Math.min(...allPrices) / 100) * 100, [allPrices]);
-    const maxPrice = useMemo(() => Math.ceil(Math.max(...allPrices) / 100) * 100, [allPrices]);
+    const allPrices = useMemo(() => products.map(p => p.price), [products]);
+    const minPrice = useMemo(() => allPrices.length > 0 ? Math.floor(Math.min(...allPrices) / 100) * 100 : 0, [allPrices]);
+    const maxPrice = useMemo(() => allPrices.length > 0 ? Math.ceil(Math.max(...allPrices) / 100) * 100 : 10000, [allPrices]);
 
-    const [selectedFilters, setSelectedFilters] = useState(() => {
+    const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>(() => {
         try {
             const savedFiltersJSON = localStorage.getItem('shopFilters');
             if (savedFiltersJSON) {
                 const savedFilters = JSON.parse(savedFiltersJSON);
-                 if (savedFilters && typeof savedFilters === 'object' && Array.isArray(savedFilters.category)) {
+                 if (savedFilters && typeof savedFilters === 'object') {
+                    const sanitize = (val: unknown): string[] => Array.isArray(val) ? val.filter((i: unknown): i is string => typeof i === 'string') : [];
                     return {
-                        category: savedFilters.category || [],
-                        color: savedFilters.color || [],
-                        size: savedFilters.size || [],
-                        fabric: savedFilters.fabric || [],
-                        fit: savedFilters.fit || [],
+                        category: sanitize((savedFilters as any).category),
+                        color: sanitize((savedFilters as any).color),
+                        size: sanitize((savedFilters as any).size),
+                        fabric: sanitize((savedFilters as any).fabric),
+                        fit: sanitize((savedFilters as any).fit),
                     };
                 }
             }
@@ -120,16 +133,28 @@ const Shop: React.FC<ShopProps> = ({ onProductClick, onToggleWishlist, wishlist,
             if (savedRangeJSON) {
                 const savedRange = JSON.parse(savedRangeJSON);
                 if (savedRange && typeof savedRange.min === 'number' && typeof savedRange.max === 'number') {
-                    const validMin = Math.max(minPrice, savedRange.min);
-                    const validMax = Math.min(maxPrice, savedRange.max);
-                    return { min: validMin, max: validMax };
+                    return { min: savedRange.min, max: savedRange.max };
                 }
             }
         } catch (error) {
             console.error("Failed to parse or use price range from localStorage", error);
         }
-        return { min: minPrice, max: maxPrice };
+        return { min: 0, max: 10000 };
     });
+    
+    // Update price range when products change if not set by user interaction yet
+    useEffect(() => {
+        if (products.length > 0) {
+             setSelectedPriceRange(prev => {
+                 // Only update if the range seems default or out of bounds
+                 if (prev.min === 0 && prev.max === 10000) {
+                     return { min: minPrice, max: maxPrice };
+                 }
+                 return prev;
+             });
+        }
+    }, [products, minPrice, maxPrice]);
+
     const [sortBy, setSortBy] = useState('featured');
 
     useEffect(() => {
@@ -160,19 +185,19 @@ const Shop: React.FC<ShopProps> = ({ onProductClick, onToggleWishlist, wishlist,
     }, [isFilterOpen]);
 
     const availableCategories = useMemo(() => CATEGORIES, []);
-    const availableColors = useMemo(() => [...new Set(PRODUCTS.flatMap(p => p.colors || []))], []);
+    const availableColors = useMemo(() => [...new Set(products.flatMap(p => p.colors || []))], [products]);
     const availableSizes = useMemo(() => {
-        const sizes = [...new Set(PRODUCTS.flatMap(p => p.sizes || []))];
+        const sizes = [...new Set(products.flatMap(p => p.sizes || []))] as string[];
         const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL'];
-        const numericSizes = sizes.filter(s => !isNaN(parseInt(s))).sort((a, b) => parseInt(a) - parseInt(b));
+        const numericSizes = sizes.filter(s => !isNaN(parseInt(s as string))).sort((a, b) => parseInt(a as string) - parseInt(b as string));
         const stringSizes = sizeOrder.filter(s => sizes.includes(s));
         return [...stringSizes, ...numericSizes];
-    }, []);
-    const availableFabrics = useMemo(() => [...new Set(PRODUCTS.map(p => p.fabric))], []);
+    }, [products]);
+    const availableFabrics = useMemo(() => [...new Set(products.map(p => p.fabric))], [products]);
     const availableFits = useMemo(() => {
-        const fits = [...new Set(PRODUCTS.map(p => p.fit))];
+        const fits = [...new Set(products.map(p => p.fit))];
         return fits.filter(fit => !['N/A', 'Adjustable'].includes(fit));
-    }, []);
+    }, [products]);
 
     const handleCheckboxChange = (filterType: keyof typeof selectedFilters, value: string) => {
         setSelectedFilters(prev => {
@@ -216,44 +241,50 @@ const Shop: React.FC<ShopProps> = ({ onProductClick, onToggleWishlist, wishlist,
         (isPriceFilterActive ? 1 : 0);
 
     const filteredAndSortedProducts = useMemo(() => {
-        let products: Product[] = [...PRODUCTS];
+        let filteredProducts: Product[] = [...products];
 
         if (selectedFilters.category.length > 0) {
-            products = products.filter(p => selectedFilters.category.includes(p.category));
+            filteredProducts = filteredProducts.filter(p => selectedFilters.category.includes(p.category));
         }
         if (selectedFilters.color.length > 0) {
-            products = products.filter(p => p.colors?.some(c => selectedFilters.color.includes(c)));
+            filteredProducts = filteredProducts.filter(p => p.colors?.some(c => selectedFilters.color.includes(c)));
         }
         if (selectedFilters.size.length > 0) {
-            products = products.filter(p => p.sizes?.some(s => selectedFilters.size.includes(s)));
+            filteredProducts = filteredProducts.filter(p => p.sizes?.some(s => selectedFilters.size.includes(s)));
         }
         if (selectedFilters.fabric.length > 0) {
-            products = products.filter(p => selectedFilters.fabric.includes(p.fabric));
+            filteredProducts = filteredProducts.filter(p => selectedFilters.fabric.includes(p.fabric));
         }
         if (selectedFilters.fit.length > 0) {
-            products = products.filter(p => selectedFilters.fit.includes(p.fit));
+            filteredProducts = filteredProducts.filter(p => selectedFilters.fit.includes(p.fit));
         }
         
-        products = products.filter(p => p.price >= selectedPriceRange.min && p.price <= selectedPriceRange.max);
+        filteredProducts = filteredProducts.filter(p => p.price >= selectedPriceRange.min && p.price <= selectedPriceRange.max);
 
         switch (sortBy) {
             case 'stock-desc':
-                products.sort((a, b) => b.stock - a.stock);
+                filteredProducts.sort((a, b) => b.stock - a.stock);
                 break;
             case 'price-asc':
-                products.sort((a, b) => a.price - b.price);
+                filteredProducts.sort((a, b) => a.price - b.price);
                 break;
             case 'price-desc':
-                products.sort((a, b) => b.price - a.price);
+                filteredProducts.sort((a, b) => b.price - a.price);
+                break;
+            case 'name-asc':
+                filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'name-desc':
+                filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
                 break;
             case 'featured':
             default:
-                products.sort((a, b) => a.id - b.id);
+                filteredProducts.sort((a, b) => a.id - b.id);
                 break;
         }
 
-        return products;
-    }, [selectedFilters, sortBy, selectedPriceRange]);
+        return filteredProducts;
+    }, [products, selectedFilters, sortBy, selectedPriceRange]);
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 animate-fade-in">

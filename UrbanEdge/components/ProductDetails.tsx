@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Product } from '../types';
 import { HeartIcon, CheckCircleIcon, TruckIcon, XIcon } from './icons';
@@ -29,6 +28,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onAddT
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const [activeImageUrl, setActiveImageUrl] = useState(product?.imageUrls[0] || '');
 
+  const isOutOfStock = product.stock === 0;
 
   if (!product) {
     return (
@@ -174,24 +174,33 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onAddT
                 )}
 
                 <div className="mt-8 flex gap-4">
-                    <button 
-                      onClick={handleAddToCartClick}
-                      disabled={isAdded}
-                      className={`flex-grow px-8 py-4 text-white font-bold uppercase tracking-wider transition-colors duration-300 rounded-md flex items-center justify-center gap-2 ${
-                          isAdded 
-                          ? 'bg-green-600 cursor-not-allowed' 
-                          : 'bg-pink-600 hover:bg-pink-700'
-                      }`}
-                    >
-                      {isAdded ? (
-                          <>
-                              <CheckCircleIcon className="w-6 h-6" />
-                              <span>Added!</span>
-                          </>
-                      ) : (
-                          <span>Add to Cart</span>
-                      )}
-                    </button>
+                    {isOutOfStock ? (
+                        <button 
+                            disabled
+                            className="flex-grow px-8 py-4 bg-gray-700 text-gray-400 font-bold uppercase tracking-wider rounded-md cursor-not-allowed"
+                        >
+                            Out of Stock
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={handleAddToCartClick}
+                            disabled={isAdded}
+                            className={`flex-grow px-8 py-4 text-white font-bold uppercase tracking-wider transition-colors duration-300 rounded-md flex items-center justify-center gap-2 ${
+                                isAdded 
+                                ? 'bg-green-600 cursor-not-allowed' 
+                                : 'bg-pink-600 hover:bg-pink-700'
+                            }`}
+                        >
+                        {isAdded ? (
+                            <>
+                                <CheckCircleIcon className="w-6 h-6" />
+                                <span>Added!</span>
+                            </>
+                        ) : (
+                            <span>Add to Cart</span>
+                        )}
+                        </button>
+                    )}
                     <button
                       onClick={() => onToggleWishlist(product.id)}
                       className={`flex items-center justify-center gap-2 px-6 py-4 border rounded-md transition-colors duration-300 font-bold uppercase tracking-wider text-sm ${

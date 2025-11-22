@@ -21,7 +21,7 @@ const Hero: React.FC<HeroProps> = ({ onShopNowClick }) => {
           Style That Speaks
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-300">
-          Affordable fashion for the modern Indian man — stylish, confident, and effortlessly cool. Explore new arrivals starting at just ₹799.
+          Affordable fashion for the modern Indian man — stylish, confident, and effortlessly cool. Explore new arrivals starting at just ₹199.
         </p>
         <button
           onClick={onShopNowClick}

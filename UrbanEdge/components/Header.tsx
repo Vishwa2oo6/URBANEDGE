@@ -64,8 +64,19 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, wishlistCoun
 
             {/* Logo (Center on Mobile, Left on Desktop) */}
             <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 md:flex-shrink-0">
-              <button onClick={() => onNavigate('home')} className="text-2xl font-extrabold tracking-wider uppercase text-white">
-                URBANEDGE
+              <button onClick={() => onNavigate('home')} className="flex items-center gap-3 group">
+                <img 
+                  src="logo new.png" 
+                  alt="UrbanEdge Logo" 
+                  className="h-10 w-auto object-contain" 
+                />
+                <span className="text-2xl font-extrabold tracking-wider uppercase text-white hidden md:block">
+                  URBANEDGE
+                </span>
+                {/* Mobile text */}
+                <span className="text-2xl font-extrabold tracking-wider uppercase text-white md:hidden">
+                  URBANEDGE
+                </span>
               </button>
             </div>
             
@@ -132,7 +143,10 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, wishlistCoun
         <div className="fixed inset-0 bg-black z-50 animate-fade-in">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col">
             <div className="flex items-center justify-between h-20">
-              <span className="text-2xl font-extrabold tracking-wider uppercase text-white">URBANEDGE</span>
+              <div className="flex items-center gap-3">
+                 <img src="logo new.png" alt="Logo" className="h-8 w-auto" />
+                 <span className="text-2xl font-extrabold tracking-wider uppercase text-white">URBANEDGE</span>
+              </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white">
                 <XIcon />
               </button>

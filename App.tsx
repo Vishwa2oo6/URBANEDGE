@@ -8,9 +8,12 @@ import RecommendationEngine from './components/RecommendationEngine';
 import Footer from './components/Footer';
 import BottomNavBar from './components/BottomNavBar';
 import ChatBot from './components/ChatBot';
+import SplashScreen from './components/SplashScreen';
 import { CheckCircleIcon } from './components/icons';
 import { CATEGORIES, PRODUCTS, USERS as mockUsers, FAQS } from './constants';
 import { CartItem, Product, Order, User, ShippingInfo } from './types';
+// @ts-ignore
+import Fuse from 'fuse.js';
 
 // Lazy load page-level components for code-splitting
 const Shop = lazy(() => import('./components/Shop'));
@@ -27,12 +30,13 @@ const Contact = lazy(() => import('./components/Contact'));
 const FAQ = lazy(() => import('./components/FAQ'));
 const Login = lazy(() => import('./components/Login'));
 const SignUp = lazy(() => import('./components/SignUp'));
-
+const SellerDashboard = lazy(() => import('./components/SellerDashboard'));
+const AIStylist = lazy(() => import('./components/AIStylist'));
 
 type Page = 
   | 'home' | 'shop' | 'cart' | 'checkout' | 'account' | 'wishlist' 
   | 'order-tracking' | 'about' | 'contact' | 'faq' | 'login' | 'signup'
-  | 'search' | 'product' | 'order-confirmation';
+  | 'search' | 'product' | 'order-confirmation' | 'seller-dashboard';
 
 type View = 
   | { page: 'home' }
@@ -49,22 +53,26 @@ type View =
   | { page: 'contact' }
   | { page: 'faq' }
   | { page: 'login' }
-  | { page: 'signup' };
+  | { page: 'signup' }
+  | { page: 'seller-dashboard' };
   
 const LoadingSpinner: React.FC = () => (
-    <div className="flex justify-center items-center" style={{ height: 'calc(100vh - 160px)' }}>
+    <div className="flex justify-center items-center" style={{ minHeight: 'calc(100vh - 144px)' }}>
         <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-white"></div>
     </div>
 );
 
-
 const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState(true);
   const [view, setView] = useState<View>({ page: 'home' });
   const [cart, setCart] = useState<CartItem[]>([]);
   const [authRedirect, setAuthRedirect] = useState<Page | null>(null);
   const productsRef = useRef<HTMLDivElement>(null);
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const confirmationTimerRef = useRef<number | null>(null);
+  
+  const [isAIStylistOpen, setIsAIStylistOpen] = useState(false);
+  const [aiStylistProduct, setAiStylistProduct] = useState<Product | null>(null);
 
   // --- Persistent State Management ---
   const [users, setUsers] = useState<User[]>(() => {
@@ -84,10 +92,37 @@ const App: React.FC = () => {
   });
 
   const [wishlist, setWishlist] = useState<number[]>([]);
+  
+  // Versioned product storage key to force price updates on reload
+  const PRODUCTS_STORAGE_KEY = 'urbanedge_products_v2';
 
-  // Persist users and orders to localStorage
+  const [products, setProducts] = useState<Product[]>(() => {
+    try {
+        const storedProducts = localStorage.getItem(PRODUCTS_STORAGE_KEY);
+        // Merge stored products with initial ones to ensure new hardcoded items appear
+        if (storedProducts) {
+            const parsedProducts: Product[] = JSON.parse(storedProducts);
+            const productMap = new Map(parsedProducts.map((p) => [p.id, p]));
+            
+            PRODUCTS.forEach(p => {
+                // Ensure price updates propagate even if product exists in local storage
+                if (productMap.has(p.id)) {
+                    const existing = productMap.get(p.id)!;
+                    productMap.set(p.id, { ...existing, price: p.price });
+                } else {
+                    productMap.set(p.id, p);
+                }
+            });
+            return Array.from(productMap.values());
+        }
+        return PRODUCTS;
+    } catch { return PRODUCTS; }
+  });
+
+  // Persist data to localStorage
   useEffect(() => { localStorage.setItem('urbanedge_users', JSON.stringify(users)); }, [users]);
   useEffect(() => { localStorage.setItem('urbanedge_orders', JSON.stringify(orders)); }, [orders]);
+  useEffect(() => { localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products)); }, [products]);
 
   // Initial auth check on app load
   useEffect(() => {
@@ -136,7 +171,7 @@ const App: React.FC = () => {
 
   const handleNavigate = (path: string) => {
     const targetPage = path.split('#')[0] as Page;
-    const protectedPages: Page[] = ['account', 'checkout', 'wishlist', 'order-tracking'];
+    const protectedPages: Page[] = ['account', 'checkout', 'wishlist', 'order-tracking', 'seller-dashboard'];
 
     if (protectedPages.includes(targetPage) && !currentUser) {
         setAuthRedirect(targetPage);
@@ -144,8 +179,7 @@ const App: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'auto' });
         return;
     }
-
-
+    
     switch (targetPage) {
       case 'home':
         const [, anchor] = path.split('#');
@@ -155,6 +189,10 @@ const App: React.FC = () => {
         } else {
            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        break;
+      case 'seller-dashboard':
+        setView({ page: 'seller-dashboard' });
+        window.scrollTo({ top: 0, behavior: 'auto' });
         break;
       case 'shop':
       case 'cart':
@@ -260,6 +298,15 @@ const App: React.FC = () => {
       status: 'Processing',
     };
     
+    const updatedProducts = products.map(p => {
+        const cartItem = cart.find(c => c.id === p.id);
+        if (cartItem) {
+            return { ...p, stock: Math.max(0, p.stock - cartItem.quantity) };
+        }
+        return p;
+    });
+    setProducts(updatedProducts);
+
     setOrders(prevOrders => [newOrder, ...prevOrders]);
     setCart([]);
     setView({ page: 'order-confirmation', orderId });
@@ -302,7 +349,8 @@ const App: React.FC = () => {
           name,
           email,
           password: pass,
-          memberSince: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+          memberSince: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+          role: 'customer'
       };
       setUsers(prev => [...prev, newUser]);
       const { password, ...userWithoutPassword } = newUser;
@@ -327,6 +375,25 @@ const App: React.FC = () => {
       }
   };
 
+  const handleUpdateProductStock = (productId: number, newStock: number) => {
+    setProducts(prevProducts =>
+      prevProducts.map(p => (p.id === productId ? { ...p, stock: newStock } : p))
+    );
+  };
+
+  const handleAddNewProduct = (productData: Omit<Product, 'id'>) => {
+    const newProduct: Product = {
+        id: Date.now(),
+        ...productData,
+    };
+    setProducts(prevProducts => [newProduct, ...prevProducts]);
+  };
+  
+  const handleOpenAIStylist = (product?: Product) => {
+      setAiStylistProduct(product || null);
+      setIsAIStylistOpen(true);
+  };
+
   const mainCategories = CATEGORIES.filter(c => ['T-Shirts', 'Shirts', 'Jeans', 'Jackets'].includes(c.name));
   const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const userOrders = orders.filter(order => order.userId === currentUser?.id);
@@ -334,7 +401,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (view.page) {
       case 'product':
-        const product = PRODUCTS.find(p => p.id === view.productId);
+        const product = products.find(p => p.id === view.productId);
         if (!product) return <p>Product not found</p>;
         return <ProductDetails 
             product={product} 
@@ -342,12 +409,14 @@ const App: React.FC = () => {
             onAddToCart={handleAddToCart}
             onToggleWishlist={handleToggleWishlist}
             isInWishlist={wishlist.includes(product.id)}
-            allProducts={PRODUCTS}
+            allProducts={products}
             onProductClick={handleSelectProduct}
             wishlist={wishlist}
+            onOpenAIStylist={handleOpenAIStylist}
         />;
       case 'shop':
         return <Shop 
+          products={products}
           onProductClick={handleSelectProduct} 
           onToggleWishlist={handleToggleWishlist} 
           wishlist={wishlist}
@@ -378,7 +447,7 @@ const App: React.FC = () => {
       case 'order-confirmation':
         return <OrderConfirmation orderId={view.orderId} onNavigate={handleNavigate} />;
       case 'wishlist':
-        const wishlistItems = PRODUCTS.filter(p => wishlist.includes(p.id));
+        const wishlistItems = products.filter(p => wishlist.includes(p.id));
         return <Wishlist
           items={wishlistItems}
           onProductClick={handleSelectProduct}
@@ -387,10 +456,24 @@ const App: React.FC = () => {
           onNavigate={handleNavigate}
         />;
       case 'search':
-        const searchResults = PRODUCTS.filter(p => 
-            p.name.toLowerCase().includes(view.query.toLowerCase()) || 
-            p.category.toLowerCase().includes(view.query.toLowerCase())
-        );
+        // Fuzzy search implementation using Fuse.js
+        const fuseOptions = {
+            keys: [
+                { name: 'name', weight: 0.5 },
+                { name: 'category', weight: 0.3 },
+                { name: 'description', weight: 0.2 },
+                'colors',
+                'fabric'
+            ],
+            threshold: 0.4, // Controls fuzziness (0.0 = exact, 1.0 = match anything)
+            isCaseSensitive: false,
+            shouldSort: true,
+        };
+        
+        const fuse = new Fuse(products, fuseOptions);
+        const fuseResults = fuse.search(view.query);
+        const searchResults = fuseResults.map((result: any) => result.item);
+
         return <SearchResults
             query={view.query}
             results={searchResults}
@@ -411,6 +494,8 @@ const App: React.FC = () => {
         return <Login onLogin={handleLogin} onNavigate={(page) => handleNavigate(page)} />;
       case 'signup':
         return <SignUp onSignUp={handleSignUp} onNavigate={(page) => handleNavigate(page)} />;
+      case 'seller-dashboard':
+        return <SellerDashboard products={products} orders={orders} onUpdateStock={handleUpdateProductStock} onAddProduct={handleAddNewProduct} />;
       case 'home':
       default:
         return (
@@ -418,6 +503,7 @@ const App: React.FC = () => {
             <Hero onShopNowClick={handleShopNowClick} />
             <div ref={productsRef}>
               <FeaturedProducts 
+                products={products}
                 onProductClick={handleSelectProduct} 
                 onToggleWishlist={handleToggleWishlist}
                 wishlist={wishlist}
@@ -437,6 +523,7 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen font-sans pb-16 overflow-x-hidden">
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       <Header 
         onNavigate={handleNavigate} 
         cartItemCount={cartItemCount}
@@ -458,6 +545,14 @@ const App: React.FC = () => {
       )}
       <BottomNavBar onNavigate={handleNavigate} activePage={view.page} />
       <ChatBot />
+      <Suspense fallback={null}>
+        <AIStylist 
+            isOpen={isAIStylistOpen} 
+            onClose={() => setIsAIStylistOpen(false)} 
+            product={aiStylistProduct}
+            allProducts={products}
+        />
+      </Suspense>
     </div>
   );
 };

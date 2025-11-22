@@ -63,3 +63,13 @@ export interface FAQItem {
   question: string;
   answer: string;
 }
+
+export interface AIStockSuggestion {
+    productId: number;
+    productName: string;
+    currentStock: number;
+    reasoning: string;
+    action: 'set_out_of_stock' | 'monitor';
+}
+
+export type StockAlertSubscriptions = Record<number, number[]>;

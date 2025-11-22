@@ -1,4 +1,5 @@
 
+
 import React from "react";
 
 interface IconProps {
@@ -119,6 +120,12 @@ export const InstagramIcon: React.FC<IconProps> = ({
 );
 
 /* ---------- Utility Icons ---------- */
+export const SparklesIcon: React.FC<IconProps> = ({ className = "w-6 h-6" }) => (
+  <svg fill="currentColor" className={className} viewBox="0 0 20 20" aria-hidden="true">
+    <path d="M10 3.5c-.3 0-.6.2-.8.5l-.6 1.3c-.1.2-.3.3-.5.3l-1.4.2c-.3 0-.6.3-.7.6 0 .3.2.6.5.7l1 .7c.2.1.3.4.2.6l-.3 1.4c-.1.3.1.6.4.8.3.1.6 0 .8-.2l.7-1c.2-.2.4-.2.6 0l.7 1c.2.2.5.3.8.2.3-.1.5-.4.4-.8l-.3-1.4c-.1-.2 0-.5.2-.6l1-.7c.3-.2.4-.5.2-.7 0-.3-.3-.6-.7-.6l-1.4-.2c-.2 0-.4-.1-.5-.3l-.6-1.3c-.2-.3-.5-.5-.8-.5zM3.5 12c-.3 0-.6.2-.8.5l-.6 1.3c-.1.2-.3.3-.5.3l-1.4.2c-.3 0-.6.3-.7.6s.2.6.5.7l1 .7c.2.1.3.4.2.6l-.3 1.4c-.1.3.1.6.4.8s.6 0 .8-.2l.7-1c.2-.2.4-.2.6 0l.7 1c.2.2.5.3.8.2s.5-.4.4-.8l-.3-1.4c-.1-.2 0-.5.2-.6l1-.7c.3-.2.4-.5.2-.7s-.3-.6-.7-.6l-1.4-.2c-.2 0-.4-.1-.5-.3l-.6-1.3c-.2-.3-.5-.5-.8-.5zm13 0c-.3 0-.6.2-.8.5l-.6 1.3c-.1.2-.3.3-.5.3l-1.4.2c-.3 0-.6.3-.7.6s.2.6.5.7l1 .7c.2.1.3.4.2.6l-.3 1.4c-.1.3.1.6.4.8s.6 0 .8-.2l.7-1c.2-.2.4-.2.6 0l.7 1c.2.2.5.3.8.2s.5-.4.4-.8l-.3-1.4c-.1-.2 0-.5.2-.6l1-.7c.3-.2.4-.5.2-.7s-.3-.6-.7-.6l-1.4-.2c-.2 0-.4-.1-.5-.3l-.6-1.3c-.2-.3-.5-.5-.8-.5z"/>
+  </svg>
+);
+
 export const ChevronDownIcon: React.FC<IconProps> = ({
   className = "w-5 h-5",
 }) => (
@@ -264,5 +271,11 @@ export const CogIcon: React.FC<IconProps> = ({ className = "w-6 h-6" }) => (
 export const PencilIcon: React.FC<IconProps> = ({ className = "w-6 h-6" }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+  </svg>
+);
+
+export const BellIcon: React.FC<IconProps> = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
   </svg>
 );

@@ -27,6 +27,20 @@
       .animate-fade-in-down {
           animation: fadeInDown 0.3s ease-in-out;
       }
+      /* Custom Scrollbar for Carousel */
+      .horizontal-scrollbar::-webkit-scrollbar {
+        height: 6px;
+      }
+      .horizontal-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .horizontal-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(107, 114, 128, 0.5); /* gray-500 with opacity */
+        border-radius: 10px;
+      }
+      .horizontal-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(156, 163, 175, 0.5); /* gray-400 with opacity */
+      }
     </style>
   <script type="importmap">
 {
@@ -34,13 +48,15 @@
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0"
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@mediapipe/tasks-vision": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/+esm",
+    "fuse.js": "https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.mjs"
   }
 }
 </script>
 </head>
   <body class="bg-gray-900 text-white">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
   </body>
 </html>

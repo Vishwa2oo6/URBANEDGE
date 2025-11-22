@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
 import { User, Order, OrderStatus } from '../types';
+import { SELLER_ID } from '../constants';
 import { UserIcon, ClipboardListIcon, HeartIcon, CogIcon, PencilIcon, CheckIcon, XIcon, PackageIcon } from './icons';
 
 interface AccountProps {
@@ -103,7 +105,7 @@ const Account: React.FC<AccountProps> = ({ user, orders, wishlistCount, onLogout
                            </div>
                            <div>
                                 <h2 className="text-xl font-bold text-white">{user.name}</h2>
-                                <p className="text-sm text-gray-400">Customer</p>
+                                <p className="text-sm text-gray-400">{user.role === 'seller' ? 'Seller' : 'Customer'}</p>
                            </div>
                         </div>
                         <nav className="space-y-2">
@@ -156,6 +158,15 @@ const DashboardView: React.FC<{ user: User, orders: Order[], wishlistCount: numb
                     <ActionCard title="Update Your Profile" onClick={() => setActiveTab('profile')} />
                 </div>
             </div>
+            
+            {user.id === SELLER_ID && (
+                <div className="mt-8">
+                    <h2 className="text-2xl font-bold text-white">Seller Tools</h2>
+                    <div className="mt-4">
+                        <ActionCard title="Manage Inventory" onClick={() => onNavigate('seller-dashboard')} />
+                    </div>
+                </div>
+            )}
 
              {latestOrder && (
                 <div className="mt-8">
@@ -182,8 +193,6 @@ const DashboardView: React.FC<{ user: User, orders: Order[], wishlistCount: numb
     );
 };
 
-// Fix: Changed icon prop type from React.ReactNode to React.ReactElement for proper type inference with React.cloneElement.
-// FIX: Add a more specific type to the icon prop to fix the cloneElement error.
 const StatCard: React.FC<{title: string, value: string, icon: React.ReactElement<{ className?: string, filled?: boolean }>}> = ({ title, value, icon }) => (
     <div className="bg-gray-900 border border-gray-800 p-6 flex items-center gap-6">
         <div className="bg-gray-800 p-3 rounded-md">

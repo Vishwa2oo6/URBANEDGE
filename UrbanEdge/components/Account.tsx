@@ -183,8 +183,7 @@ const DashboardView: React.FC<{ user: User, orders: Order[], wishlistCount: numb
     );
 };
 
-// Fix: Changed icon prop type from React.ReactNode to React.ReactElement for proper type inference with React.cloneElement.
-// FIX: Add a more specific type to the icon prop to fix the cloneElement error.
+// FIX: Changed icon prop type from React.ReactNode to React.ReactElement to fix cloneElement error.
 const StatCard: React.FC<{title: string, value: string, icon: React.ReactElement<{ className?: string, filled?: boolean }>}> = ({ title, value, icon }) => (
     <div className="bg-gray-900 border border-gray-800 p-6 flex items-center gap-6">
         <div className="bg-gray-800 p-3 rounded-md">

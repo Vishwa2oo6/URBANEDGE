@@ -1,44 +1,45 @@
+
 // This file serves as a single source of truth for all product prices.
 // To update a price, simply change the value associated with the product ID.
 
 export const PRODUCT_PRICES: { [key: number]: number } = {
-  // Sneakers
-  1: 2499, // Tech Runner Sneakers
-  6: 1999, // High-Top Canvas
-  12: 1799, // Retro Runner Sneakers
-  13: 1599, // Classic White Sneakers
+  // Sneakers (Previously ~2000-2500, now 799-999)
+  1: 999, // Tech Runner Sneakers
+  6: 899, // High-Top Canvas
+  12: 799, // Retro Runner Sneakers
+  13: 799, // Classic White Sneakers
   
-  // Jackets
-  2: 2999, // Urban Explorer Jacket
-  5: 3999, // Leather Biker Jacket
-  8: 3499, // Tailored Wool Blazer
-  11: 2299, // Distressed Denim Jacket
-  14: 2199, // Essential Bomber Jacket
+  // Jackets (Previously ~2500-4000, now 999-1499)
+  2: 1299, // Urban Explorer Jacket
+  5: 1999, // Leather Biker Jacket
+  8: 1799, // Tailored Wool Blazer
+  11: 1099, // Distressed Denim Jacket
+  14: 999, // Essential Bomber Jacket
   
-  // Shirts
-  3: 1199, // Classic Oxford Shirt
-  15: 1499, // Flannel Checkered Shirt
-  16: 1399, // Linen Casual Shirt
+  // Shirts (Previously ~1200-1500, now 599-699)
+  3: 599, // Classic Oxford Shirt
+  15: 699, // Flannel Checkered Shirt
+  16: 699, // Linen Casual Shirt
   
-  // T-Shirts
-  4: 799, // Graphic T-Shirt
-  17: 699, // Striped Crew Neck Tee
-  18: 899, // Henley Neck T-Shirt
-  24: 1099, // Polo T-Shirt
+  // T-Shirts (Previously ~800-1100, now 299-499)
+  4: 299, // Graphic T-Shirt
+  17: 299, // Striped Crew Neck Tee
+  18: 399, // Henley Neck T-Shirt
+  24: 499, // Polo T-Shirt
   
-  // Jeans
-  7: 1899, // Slim Fit Jeans
-  19: 1799, // Relaxed Fit Jeans
-  20: 1999, // Black Skinny Jeans
+  // Jeans (Previously ~1800-2000, now 899-999)
+  7: 899, // Slim Fit Jeans
+  19: 899, // Relaxed Fit Jeans
+  20: 999, // Black Skinny Jeans
   
-  // Accessories
-  9: 2199, // Minimalist Leather Watch
-  21: 1599, // Canvas Backpack
-  22: 999, // Aviator Sunglasses
-  26: 699, // Knit Beanie Hat
+  // Accessories (Previously ~1000-2200, now 199-999)
+  9: 999, // Minimalist Leather Watch
+  21: 799, // Canvas Backpack
+  22: 399, // Aviator Sunglasses
+  26: 199, // Knit Beanie Hat
   
-  // Shoes
-  10: 2799, // Suede Chelsea Boots
-  23: 2599, // Leather Loafers
-  25: 3199, // Leather Derby Shoes
+  // Shoes (Previously ~2600-3200, now 1199-1499)
+  10: 1399, // Suede Chelsea Boots
+  23: 1199, // Leather Loafers
+  25: 1499, // Leather Derby Shoes
 };

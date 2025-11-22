@@ -399,6 +399,9 @@ export const PRODUCTS: Product[] = [
   }
 ];
 
+// --- User Management ---
+export const SELLER_ID = 3; // The unique ID for the designated seller account.
+
 // This is a mock database. In a real application, this would be a secure backend service.
 export const USERS: User[] = [
   {
@@ -416,6 +419,14 @@ export const USERS: User[] = [
     password: "password456",
     memberSince: "July 2023",
     role: 'customer',
+  },
+  {
+    id: 3,
+    name: "Sam Vendor",
+    email: "seller@urbanedge.com",
+    password: "password789",
+    memberSince: "August 2024",
+    role: 'seller', // Role is kept for display purposes, but access is controlled by SELLER_ID.
   }
 ];
 

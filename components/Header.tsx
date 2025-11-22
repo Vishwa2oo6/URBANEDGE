@@ -20,6 +20,37 @@ const MobileNavLink: React.FC<{ path: string; children: React.ReactNode; onClick
     </button>
 );
 
+// Custom Vector Logo Component
+const InvisibleManLogo: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 512 512" className={className} xmlns="http://www.w3.org/2000/svg">
+    {/* Black Background Circle */}
+    <circle cx="256" cy="256" r="250" fill="currentColor" className="text-black" />
+    <circle cx="256" cy="256" r="245" fill="none" stroke="currentColor" strokeWidth="10" className="text-white/10" />
+    
+    <g fill="currentColor" className="text-white">
+      {/* Hat Crown */}
+      <path d="M166 130 C166 80 346 80 346 130 L346 150 L166 150 Z" />
+      {/* Hat Brim */}
+      <path d="M86 150 Q 256 210 426 150 Q 440 150 426 165 Q 256 225 86 165 Q 72 150 86 150 Z" />
+      
+      {/* Shirt Collar */}
+      <path d="M256 220 L210 220 L240 260 Z" />
+      <path d="M256 220 L302 220 L272 260 Z" />
+      
+      {/* Tie */}
+      <path d="M256 225 L230 250 L256 275 L282 250 Z" />
+      <path d="M256 275 L235 420 L256 440 L277 420 Z" />
+      
+      {/* Suit Lapels */}
+      <path d="M150 240 L225 410 L255 410 L195 260 L150 240 Z" />
+      <path d="M362 240 L287 410 L257 410 L317 260 L362 240 Z" />
+      
+      {/* Buttons */}
+      <circle cx="256" cy="460" r="5" />
+      <circle cx="256" cy="480" r="5" />
+    </g>
+  </svg>
+);
 
 const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, wishlistCount, onSearchSubmit, currentUser }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -64,8 +95,15 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, wishlistCoun
 
             {/* Logo (Center on Mobile, Left on Desktop) */}
             <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 md:flex-shrink-0">
-              <button onClick={() => onNavigate('home')} className="text-2xl font-extrabold tracking-wider uppercase text-white">
-                URBANEDGE
+              <button onClick={() => onNavigate('home')} className="flex items-center gap-3 group">
+                <InvisibleManLogo className="h-12 w-12" />
+                <span className="text-2xl font-extrabold tracking-wider uppercase text-white hidden md:block">
+                  URBANEDGE
+                </span>
+                {/* Mobile text */}
+                <span className="text-2xl font-extrabold tracking-wider uppercase text-white md:hidden">
+                  URBANEDGE
+                </span>
               </button>
             </div>
             
@@ -132,7 +170,10 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, wishlistCoun
         <div className="fixed inset-0 bg-black z-50 animate-fade-in">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col">
             <div className="flex items-center justify-between h-20">
-              <span className="text-2xl font-extrabold tracking-wider uppercase text-white">URBANEDGE</span>
+              <div className="flex items-center gap-3">
+                 <InvisibleManLogo className="h-12 w-12" />
+                 <span className="text-2xl font-extrabold tracking-wider uppercase text-white">URBANEDGE</span>
+              </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white">
                 <XIcon />
               </button>
